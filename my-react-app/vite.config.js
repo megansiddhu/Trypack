@@ -14,8 +14,21 @@ export default defineConfig({
       allow: ['..']
     }
   },
-  assetsInclude: ['**/*.wasm'],
+  assetsInclude: ['**/*.wasm', '**/*.data'],
   optimizeDeps: {
     exclude: ['swisseph-wasm']
+  },
+  build: {
+    rollupOptions: {
+      output: {
+        assetFileNames: (assetInfo) => {
+          // Keep WASM and data files in assets folder with original names
+          if (assetInfo.name?.endsWith('.wasm') || assetInfo.name?.endsWith('.data')) {
+            return 'assets/[name][extname]'
+          }
+          return 'assets/[name]-[hash][extname]'
+        }
+      }
+    }
   }
 })
