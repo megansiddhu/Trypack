@@ -198,7 +198,7 @@ const ASTRO_DATA = {
     },
     Scorpio: {
       Sun: "Friendly",
-      Moon: "Neutral",
+      Moon: "Debilitated",
       Mars: "Mooltrikona",
       Mercury: "Neutral",
       Jupiter: "Friendly",
