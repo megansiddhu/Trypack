@@ -31,6 +31,36 @@ const ASTRO_DATA = {
 
   PLANETS: ["Sun", "Moon", "Mars", "Mercury", "Jupiter", "Venus", "Saturn", "Rahu", "Ketu"],
 
+  NAKSHATRAS: [
+  "Aswini",
+  "Bharani", 
+  "Krittika",
+  "Rohini",
+  "Mrigasira",
+  "Aardra",
+  "Punarvasu",
+  "Pushyami",
+  "Aaslesha",
+  "Makha",
+  "Poorva Phalguni(Pubba)",
+  "Uttara Phalguni(Uttara)",
+  "Hasta",
+  "Chitta",
+  "Swati",
+  "Visakha",
+  "Anuradha",
+  "Jyeshta",
+  "Moola",
+  "Poorvaashaada",
+  "Uttaraashaada",
+  "Sravanam",
+  "Dhanishta",
+  "Satabisha",
+  "Poorvaabhadra",
+  "Uttaraabhadra",
+  "Revati",
+],
+
   // Added months array here
   MONTHS: [
     "January",
