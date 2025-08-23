@@ -257,22 +257,22 @@ const ChartBox = memo(
             {planets.map(([planet, details]) => (
               <div key={planet}>
                 <div className="flex items-center justify-between mb-0.5 sm:mb-1">
-                  <span className="text-blue-800 font-medium text-[10px] sm:text-xs leading-tight flex items-center gap-1">
+                  <div className="flex items-center gap-1 text-blue-800 font-medium text-[10px] sm:text-xs leading-tight">
+                    <span>{planet}</span>
+                    <span className="text-gray-600 text-[8px] sm:text-[10px] font-medium">
+                      {formatDegree(details.degree + details.minute / 60)}
+                    </span>
                     <span>
-                      {planet} :{" "}
                       {getPlanetaryStatusSymbol(
                         ASTRO_DATA.ZODIAC_STATUS[sign]?.[planet]
                       )}
                     </span>
-                  </span>
-                  <span className="text-[10px] sm:text-xs flex items-center gap-1">
+                  </div>
+                  <div className="text-[10px] sm:text-xs flex items-center gap-1">
                     {details.isRetro === "true" && (
                       <span className="text-orange-500">↺</span>
                     )}
-                  </span>
-                </div>
-                <div className="text-gray-600 text-[8px] sm:text-[10px] leading-tight font-medium">
-                  {formatDegree(details.degree + details.minute / 60)}
+                  </div>
                 </div>
               </div>
             ))}
@@ -297,24 +297,30 @@ const ChartBox = memo(
         : "All Relations:";
 
       return (
-        <div className={`pt-1 sm:pt-2 border  ${
-  hasPlanets
-    ? "bg-red-50 border-red-200"
-    : "bg-blue-50 border-blue-200"
-}`}>
-          <div className="text-[6px] sm:text-[8px] text-gray-600">
-            <div className="font-semibold mb-1 hidden sm:block">
+        <div
+          className={`pt-2 sm:pt-3 pb-2 sm:pb-3 px-2 sm:px-3 border rounded-sm ${
+            hasPlanets
+              ? "bg-red-50 border-red-200"
+              : "bg-blue-50 border-blue-200"
+          }`}
+        >
+          <div className="text-[7px] sm:text-[9px] text-gray-700">
+            <div className="font-semibold mb-1.5 sm:mb-2 hidden sm:block text-center">
               {relationTitle}
             </div>
-            <div className="grid grid-cols-2 gap-0.5 sm:gap-1">
+            <div className="grid grid-cols-2 gap-1 sm:gap-1.5">
               {remainingRelations.map(([planet, status]) => (
-                <span
+                <div
                   key={planet}
-                  className={`flex items-center gap-0.5 sm:gap-1 px-0.5 sm:px-1 py-0.5 `}
+                  className="flex items-center justify-between gap-1 px-1 sm:px-1.5 py-1 bg-white bg-opacity-50 rounded-sm"
                 >
-                  <span className="whitespace-nowrap">{planet}:</span>
-                  {getPlanetaryStatusSymbol(status)}
-                </span>
+                  <span className="whitespace-nowrap text-[7px] sm:text-[9px]">
+                    {planet}:
+                  </span>
+                  <span className="flex-shrink-0">
+                    {getPlanetaryStatusSymbol(status)}
+                  </span>
+                </div>
               ))}
             </div>
           </div>
