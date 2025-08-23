@@ -126,25 +126,27 @@ const getPlanetaryStatusSymbol = (status) => {
 };
 
 // Input Field Component
-const InputField = memo(({ field, config, value, onChange, className = "" }) => (
-  <div>
-    <input
-      type="number"
-      placeholder={config.placeholder}
-      min={config.min || "0"}
-      max={config.max}
-      step={config.step}
-      value={value}
-      onChange={(e) => onChange(field, e.target.value)}
-      className={`w-full px-1.5 sm:px-2 py-1 sm:py-1.5 text-xs sm:text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${className}`}
-    />
-    {config.label && (
-      <div className="text-[10px] sm:text-xs text-gray-500 mt-0.5 text-center">
-        {config.label}
-      </div>
-    )}
-  </div>
-));
+const InputField = memo(
+  ({ field, config, value, onChange, className = "" }) => (
+    <div>
+      <input
+        type="number"
+        placeholder={config.placeholder}
+        min={config.min || "0"}
+        max={config.max}
+        step={config.step}
+        value={value}
+        onChange={(e) => onChange(field, e.target.value)}
+        className={`w-full px-1.5 sm:px-2 py-1 sm:py-1.5 text-xs sm:text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${className}`}
+      />
+      {config.label && (
+        <div className="text-[10px] sm:text-xs text-gray-500 mt-0.5 text-center">
+          {config.label}
+        </div>
+      )}
+    </div>
+  )
+);
 
 InputField.displayName = "InputField";
 
@@ -190,7 +192,10 @@ const NakshatraDisplay = memo(({ chartData, isTransit, birthData }) => {
 
       <div className="flex flex-wrap gap-3">
         {infoBoxes.map(({ key, title, value, subtitle, className }) => (
-          <div key={key} className={`bg-white rounded-lg p-3 border ${className}`}>
+          <div
+            key={key}
+            className={`bg-white rounded-lg p-3 border ${className}`}
+          >
             <div className="text-xs sm:text-sm text-gray-600 mb-1">{title}</div>
             <div className="text-lg sm:text-xl font-bold text-purple-800">
               {value}
@@ -206,320 +211,366 @@ const NakshatraDisplay = memo(({ chartData, isTransit, birthData }) => {
 NakshatraDisplay.displayName = "NakshatraDisplay";
 
 // Chart Box Component
-const ChartBox = memo(({
-  index,
-  ascendantSignIndex,
-  chartData,
-  isTransit,
-  selectedPlanet,
-  isAspected,
-}) => {
-  const sign = RASHIS[index];
-  const tamilName = TAMIL_RASHIS[index];
-  const planets = Object.entries(chartData?.planets || {}).filter(
-    ([, details]) => details.rashiIndex === index
-  );
-  const houseNumber = ((index - ascendantSignIndex + 12) % 12) + 1;
-  const isAscendant = houseNumber === 1 && !isTransit;
+const ChartBox = memo(
+  ({
+    index,
+    ascendantSignIndex,
+    chartData,
+    isTransit,
+    selectedPlanet,
+    isAspected,
+  }) => {
+    const sign = RASHIS[index];
+    const tamilName = TAMIL_RASHIS[index];
+    const planets = Object.entries(chartData?.planets || {}).filter(
+      ([, details]) => details.rashiIndex === index
+    );
+    const houseNumber = ((index - ascendantSignIndex + 12) % 12) + 1;
+    const isAscendant = houseNumber === 1 && !isTransit;
+    const hasPlanets = planets.length > 0;
 
-  const renderHouseMarkers = () => (
-    <div className="flex items-center gap-1">
-      <span
-        className={`text-xs sm:text-sm font-bold ${
-          isAscendant ? "text-red-600" : "text-gray-700"
-        }`}
-      >
-        {houseNumber}
-      </span>
-      {SPECIAL_HOUSES.kendra.includes(houseNumber) && (
-        <span className="text-blue-600 text-xs sm:text-sm">☐</span>
-      )}
-      {SPECIAL_HOUSES.trikona.includes(houseNumber) && (
-        <span className="text-green-600 text-xs sm:text-sm">△</span>
-      )}
-    </div>
-  );
+    // Get planets present in this house
+    const planetsInHouse = planets.map(([planet]) => planet);
 
-  const renderPlanets = () => (
-    <div className="mb-1 sm:mb-2 flex-grow">
-      {planets.length > 0 ? (
-        <div className="space-y-1 sm:space-y-2">
-          {planets.map(([planet, details]) => (
-            <div key={planet}>
-              <div className="flex items-center justify-between mb-0.5 sm:mb-1">
-                <span className="text-blue-800 font-medium text-[10px] sm:text-xs leading-tight flex items-center gap-1">
-                  <span>
-                    {planet} : {getPlanetaryStatusSymbol(ASTRO_DATA.ZODIAC_STATUS[sign]?.[planet])}
+    const renderHouseMarkers = () => (
+      <div className="flex items-center gap-1">
+        <span
+          className={`text-xs sm:text-sm font-bold ${
+            isAscendant ? "text-red-600" : "text-gray-700"
+          }`}
+        >
+          {houseNumber}
+        </span>
+        {SPECIAL_HOUSES.kendra.includes(houseNumber) && (
+          <span className="text-blue-600 text-xs sm:text-sm">☐</span>
+        )}
+        {SPECIAL_HOUSES.trikona.includes(houseNumber) && (
+          <span className="text-green-600 text-xs sm:text-sm">△</span>
+        )}
+      </div>
+    );
+
+    const renderPlanets = () => (
+      <div className="mb-1 sm:mb-2 flex-grow">
+        {planets.length > 0 ? (
+          <div className="space-y-1 sm:space-y-2">
+            {planets.map(([planet, details]) => (
+              <div key={planet}>
+                <div className="flex items-center justify-between mb-0.5 sm:mb-1">
+                  <span className="text-blue-800 font-medium text-[10px] sm:text-xs leading-tight flex items-center gap-1">
+                    <span>
+                      {planet} :{" "}
+                      {getPlanetaryStatusSymbol(
+                        ASTRO_DATA.ZODIAC_STATUS[sign]?.[planet]
+                      )}
+                    </span>
                   </span>
-                </span>
-                <span className="text-[10px] sm:text-xs flex items-center gap-1">
-                  {details.isRetro === "true" && (
-                    <span className="text-orange-500">↺</span>
-                  )}
-                </span>
+                  <span className="text-[10px] sm:text-xs flex items-center gap-1">
+                    {details.isRetro === "true" && (
+                      <span className="text-orange-500">↺</span>
+                    )}
+                  </span>
+                </div>
+                <div className="text-gray-600 text-[8px] sm:text-[10px] leading-tight font-medium">
+                  {formatDegree(details.degree + details.minute / 60)}
+                </div>
               </div>
-              <div className="text-gray-600 text-[8px] sm:text-[10px] leading-tight font-medium">
-                {formatDegree(details.degree + details.minute / 60)}
-              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="text-center text-gray-400 text-[8px] sm:text-[10px] py-2 sm:py-4">
+            No planets
+          </div>
+        )}
+      </div>
+    );
+
+    const renderRelations = () => {
+      // Get remaining planetary relationships (excluding planets present in this house)
+      const allPlanetaryRelations = ASTRO_DATA.ZODIAC_STATUS[sign] || {};
+      const remainingRelations = Object.entries(allPlanetaryRelations).filter(
+        ([planet]) => !planetsInHouse.includes(planet)
+      );
+
+      const relationTitle = hasPlanets
+        ? "Remaining Relations:"
+        : "All Relations:";
+
+      return (
+        <div className={`pt-1 sm:pt-2 border  ${
+  hasPlanets
+    ? "bg-red-50 border-red-200"
+    : "bg-blue-50 border-blue-200"
+}`}>
+          <div className="text-[6px] sm:text-[8px] text-gray-600">
+            <div className="font-semibold mb-1 hidden sm:block">
+              {relationTitle}
             </div>
-          ))}
+            <div className="grid grid-cols-2 gap-0.5 sm:gap-1">
+              {remainingRelations.map(([planet, status]) => (
+                <span
+                  key={planet}
+                  className={`flex items-center gap-0.5 sm:gap-1 px-0.5 sm:px-1 py-0.5 `}
+                >
+                  <span className="whitespace-nowrap">{planet}:</span>
+                  {getPlanetaryStatusSymbol(status)}
+                </span>
+              ))}
+            </div>
+          </div>
         </div>
-      ) : (
-        <div className="text-center text-gray-400 text-[8px] sm:text-[10px] py-2 sm:py-4">
-          No planets
-        </div>
-      )}
-    </div>
-  );
+      );
+    };
 
-  const renderRelations = () => (
-    <div className="pt-1 sm:pt-2 border-t border-gray-200">
-      <div className="text-[6px] sm:text-[8px] text-gray-600">
-        <div className="font-semibold mb-1 hidden sm:block">Relations:</div>
-        <div className="grid grid-cols-2 gap-0.5 sm:gap-1">
-          {Object.entries(ASTRO_DATA.ZODIAC_STATUS[sign] || {}).map(
-            ([planet, status]) => (
-              <span
-                key={planet}
-                className="flex items-center gap-0.5 sm:gap-1 bg-gray-100 px-0.5 sm:px-1 py-0.5 rounded text-[6px] sm:text-[7px]"
-              >
-                <span className="whitespace-nowrap">{planet}:</span>
-                {getPlanetaryStatusSymbol(status)}
-              </span>
-            )
-          )}
+    return (
+      <div
+        className={`border border-gray-300 text-xs flex flex-col ${
+          isAspected ? "bg-yellow-50 border-yellow-400" : "bg-white"
+        } p-1 sm:p-2`}
+        style={{ minHeight: "180px" }} // Set consistent minimum height
+      >
+        {/* Header */}
+        <div className="flex justify-between items-start mb-1 sm:mb-2">
+          {renderHouseMarkers()}
+          <div className="text-[6px] sm:text-[8px] text-gray-500 text-right leading-tight max-w-[40px] sm:max-w-[60px]">
+            {ASTRO_DATA.HOUSE_DESCRIPTIONS?.[houseNumber]?.split(" - ")[0] ||
+              ""}
+          </div>
         </div>
+
+        {/* Sign names */}
+        <div className="mb-1 sm:mb-2">
+          <div className="text-[10px] sm:text-xs font-bold text-gray-800 leading-tight">
+            {sign}
+          </div>
+          <div className="text-[8px] sm:text-[10px] text-gray-600 leading-tight">
+            {tamilName}
+          </div>
+        </div>
+
+        {renderPlanets()}
+        {renderRelations()}
       </div>
-    </div>
-  );
-
-  return (
-    <div
-      className={`border border-red-600 text-xs bg-white flex flex-col ${
-        isAspected ? "bg-yellow-50 border-yellow-400" : ""
-      } p-1 sm:p-2`}
-      style={{ minHeight: "fit-content" }}
-    >
-      {/* Header */}
-      <div className="flex justify-between items-start mb-1 sm:mb-2">
-        {renderHouseMarkers()}
-        <div className="text-[6px] sm:text-[8px] text-gray-500 text-right leading-tight max-w-[40px] sm:max-w-[60px]">
-          {ASTRO_DATA.HOUSE_DESCRIPTIONS?.[houseNumber]?.split(" - ")[0] || ""}
-        </div>
-      </div>
-
-      {/* Sign names */}
-      <div className="mb-1 sm:mb-2">
-        <div className="text-[10px] sm:text-xs font-bold text-gray-800 leading-tight">
-          {sign}
-        </div>
-        <div className="text-[8px] sm:text-[10px] text-gray-600 leading-tight">
-          {tamilName}
-        </div>
-      </div>
-
-      {renderPlanets()}
-      {renderRelations()}
-    </div>
-  );
-});
+    );
+  }
+);
 
 ChartBox.displayName = "ChartBox";
 
 // Form Section Component
-const FormSection = memo(({ birthData, onInputChange, selectedAyanamsha, onAyanamshaChange, onCalculateBirth, onCalculateTransit, loading, isInitialized }) => {
-  const formSections = [
-    {
-      title: "Date",
-      fields: DATE_FIELDS,
-      gridClass: "grid-cols-3",
-    },
-    {
-      title: "Time", 
-      fields: TIME_FIELDS,
-      gridClass: "grid-cols-2",
-    },
-    {
-      title: "Location & Timezone",
-      fields: LOCATION_FIELDS,
-      gridClass: "grid-cols-3",
-    },
-  ];
+const FormSection = memo(
+  ({
+    birthData,
+    onInputChange,
+    selectedAyanamsha,
+    onAyanamshaChange,
+    onCalculateBirth,
+    onCalculateTransit,
+    loading,
+    isInitialized,
+  }) => {
+    const formSections = [
+      {
+        title: "Date",
+        fields: DATE_FIELDS,
+        gridClass: "grid-cols-3",
+      },
+      {
+        title: "Time",
+        fields: TIME_FIELDS,
+        gridClass: "grid-cols-2",
+      },
+      {
+        title: "Location & Timezone",
+        fields: LOCATION_FIELDS,
+        gridClass: "grid-cols-3",
+      },
+    ];
 
-  const buttons = [
-    {
-      text: "Calculate Birth Chart",
-      onClick: onCalculateBirth,
-      className: "bg-blue-600 hover:bg-blue-700",
-    },
-    {
-      text: "Calculate Transit Chart",
-      onClick: onCalculateTransit,
-      className: "bg-green-600 hover:bg-green-700",
-    },
-  ];
+    const buttons = [
+      {
+        text: "Calculate Birth Chart",
+        onClick: onCalculateBirth,
+        className: "bg-blue-600 hover:bg-blue-700",
+      },
+      {
+        text: "Calculate Transit Chart",
+        onClick: onCalculateTransit,
+        className: "bg-green-600 hover:bg-green-700",
+      },
+    ];
 
-  return (
-    <div className="bg-white rounded-lg p-3 sm:p-6 mb-4 sm:mb-8 shadow-lg">
-      <h2 className="text-lg sm:text-xl font-bold text-gray-800 mb-4 sm:mb-6">
-        Birth Information
-      </h2>
+    return (
+      <div className="bg-white rounded-lg p-3 sm:p-6 mb-4 sm:mb-8 shadow-lg">
+        <h2 className="text-lg sm:text-xl font-bold text-gray-800 mb-4 sm:mb-6">
+          Birth Information
+        </h2>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-4 mb-4 sm:mb-6">
-        {formSections.map(({ title, fields, gridClass }) => (
-          <div key={title}>
-            <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-2">
-              {title}
-            </label>
-            <div className={`grid ${gridClass} gap-1 sm:gap-2`}>
-              {fields.map((config) => (
-                <InputField
-                  key={config.field}
-                  field={config.field}
-                  config={config}
-                  value={birthData[config.field]}
-                  onChange={onInputChange}
-                />
-              ))}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 sm:gap-4 mb-4 sm:mb-6">
+          {formSections.map(({ title, fields, gridClass }) => (
+            <div key={title}>
+              <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-2">
+                {title}
+              </label>
+              <div className={`grid ${gridClass} gap-1 sm:gap-2`}>
+                {fields.map((config) => (
+                  <InputField
+                    key={config.field}
+                    field={config.field}
+                    config={config}
+                    value={birthData[config.field]}
+                    onChange={onInputChange}
+                  />
+                ))}
+              </div>
             </div>
-          </div>
-        ))}
-      </div>
-
-      <div className="mb-4 sm:mb-6">
-        <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-2">
-          Ayanamsha
-        </label>
-        <select
-          value={selectedAyanamsha}
-          onChange={(e) => onAyanamshaChange(e.target.value)}
-          className="w-full px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
-        >
-          {AYANAMSHA_OPTIONS.map((option) => (
-            <option key={option.value} value={option.value}>
-              {option.label}
-            </option>
           ))}
-        </select>
-      </div>
+        </div>
 
-      <div className="flex flex-col sm:flex-row gap-2 sm:gap-4">
-        {buttons.map(({ text, onClick, className }) => (
-          <button
-            key={text}
-            onClick={onClick}
-            disabled={loading || !isInitialized}
-            className={`px-4 sm:px-6 py-2 sm:py-3 text-white rounded-lg font-medium disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors text-sm sm:text-base ${className}`}
+        <div className="mb-4 sm:mb-6">
+          <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-2">
+            Ayanamsha
+          </label>
+          <select
+            value={selectedAyanamsha}
+            onChange={(e) => onAyanamshaChange(e.target.value)}
+            className="w-full px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
           >
-            {loading ? "Calculating..." : text}
-          </button>
-        ))}
+            {AYANAMSHA_OPTIONS.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="flex flex-col sm:flex-row gap-2 sm:gap-4">
+          {buttons.map(({ text, onClick, className }) => (
+            <button
+              key={text}
+              onClick={onClick}
+              disabled={loading || !isInitialized}
+              className={`px-4 sm:px-6 py-2 sm:py-3 text-white rounded-lg font-medium disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors text-sm sm:text-base ${className}`}
+            >
+              {loading ? "Calculating..." : text}
+            </button>
+          ))}
+        </div>
       </div>
-    </div>
-  );
-});
+    );
+  }
+);
 
 FormSection.displayName = "FormSection";
 
 // South Indian Chart Component
-const SouthIndianChart = memo(({ chartData, isTransit, birthData, selectedPlanet, onPlanetSelect, isHouseAspected }) => {
-  const ascendantSignIndex = useMemo(
-    () =>
-      isTransit
-        ? chartData?.planets?.Moon?.rashiIndex || 0
-        : chartData.ascendant?.rashiIndex || 0,
-    [isTransit, chartData]
-  );
+const SouthIndianChart = memo(
+  ({
+    chartData,
+    isTransit,
+    birthData,
+    selectedPlanet,
+    onPlanetSelect,
+    isHouseAspected,
+  }) => {
+    const ascendantSignIndex = useMemo(
+      () =>
+        isTransit
+          ? chartData?.planets?.Moon?.rashiIndex || 0
+          : chartData.ascendant?.rashiIndex || 0,
+      [isTransit, chartData]
+    );
 
-  const centerContent = isTransit ? (
-    <div className="text-center">
-      <p className="text-xs sm:text-sm text-gray-600 mb-1 sm:mb-2">
-        Current Transits
-      </p>
-      <p className="text-xs sm:text-sm text-gray-500">
-        {new Date().toLocaleDateString()}
-      </p>
-    </div>
-  ) : chartData.ascendant ? (
-    <div className="text-center">
-      <p className="text-xs sm:text-sm text-gray-600 mb-1 sm:mb-2">
-        Ascendant
-      </p>
-      <p className="text-lg sm:text-xl font-bold text-blue-800">
-        {chartData.ascendant.rashi}
-      </p>
-      <p className="text-xs sm:text-sm text-gray-500">
-        {formatDegree(
-          chartData.ascendant.degree + chartData.ascendant.minute / 60
-        )}
-      </p>
-    </div>
-  ) : null;
-
-  return (
-    <div className="bg-white rounded-lg p-2 sm:p-4 shadow-lg w-full">
-      <NakshatraDisplay
-        chartData={chartData}
-        isTransit={isTransit}
-        birthData={birthData}
-      />
-
-      <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-4 sm:mb-6 gap-2 sm:gap-4">
-        <h3 className="text-lg sm:text-xl font-bold text-gray-800">
-          {isTransit ? "Transit Chart (Moon Chart)" : "Birth Chart"}
-        </h3>
-        <select
-          value={selectedPlanet || ""}
-          onChange={(e) => onPlanetSelect(e.target.value)}
-          className="w-full lg:w-auto px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-        >
-          <option value="">Select Planet Aspects</option>
-          {PLANETS.map((planet) => (
-            <option key={planet} value={planet}>
-              {planet} Aspects
-            </option>
-          ))}
-        </select>
+    const centerContent = isTransit ? (
+      <div className="text-center">
+        <p className="text-xs sm:text-sm text-gray-600 mb-1 sm:mb-2">
+          Current Transits
+        </p>
+        <p className="text-xs sm:text-sm text-gray-500">
+          {new Date().toLocaleDateString()}
+        </p>
       </div>
+    ) : chartData.ascendant ? (
+      <div className="text-center">
+        <p className="text-xs sm:text-sm text-gray-600 mb-1 sm:mb-2">
+          Ascendant
+        </p>
+        <p className="text-lg sm:text-xl font-bold text-blue-800">
+          {chartData.ascendant.rashi}
+        </p>
+        <p className="text-xs sm:text-sm text-gray-500">
+          {formatDegree(
+            chartData.ascendant.degree + chartData.ascendant.minute / 60
+          )}
+        </p>
+      </div>
+    ) : null;
 
-      <div className="w-full overflow-x-auto">
-        <div className="w-full" style={{ minWidth: "300px" }}>
-          <div
-            className="grid grid-cols-4 gap-1 sm:gap-2 w-full p-1 sm:p-2"
-            style={{ gridTemplateRows: "auto auto auto auto" }}
+    return (
+      <div className="bg-white rounded-lg p-2 sm:p-4 shadow-lg w-full">
+        <NakshatraDisplay
+          chartData={chartData}
+          isTransit={isTransit}
+          birthData={birthData}
+        />
+
+        <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center mb-4 sm:mb-6 gap-2 sm:gap-4">
+          <h3 className="text-lg sm:text-xl font-bold text-gray-800">
+            {isTransit ? "Transit Chart (Moon Chart)" : "Birth Chart"}
+          </h3>
+          <select
+            value={selectedPlanet || ""}
+            onChange={(e) => onPlanetSelect(e.target.value)}
+            className="w-full lg:w-auto px-2 sm:px-3 py-1.5 sm:py-2 text-xs sm:text-sm border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
-            {SOUTH_INDIAN_LAYOUT.map((layout, index) => (
-              <div key={index} className={layout.gridPos}>
-                <ChartBox
-                  index={layout.rashiIndex}
-                  ascendantSignIndex={ascendantSignIndex}
-                  chartData={chartData}
-                  isTransit={isTransit}
-                  selectedPlanet={selectedPlanet}
-                  isAspected={
-                    selectedPlanet &&
-                    isHouseAspected(
-                      layout.rashiIndex,
-                      chartData?.planets[selectedPlanet]
-                    )
-                  }
-                />
-              </div>
+            <option value="">Select Planet Aspects</option>
+            {PLANETS.map((planet) => (
+              <option key={planet} value={planet}>
+                {planet} Aspects
+              </option>
             ))}
+          </select>
+        </div>
 
-            {/* Center box */}
-            <div className="row-start-2 col-start-2 row-span-2 col-span-2 border-1 bg-gradient-to-br from-blue-50 to-indigo-100 flex flex-col justify-center items-center p-2 sm:p-6">
-              <h4 className="text-lg sm:text-2xl font-bold text-gray-800 mb-2 sm:mb-4 text-center">
-                {isTransit ? "🌙 Transit" : "⭐ Birth Chart"}
-              </h4>
-              {centerContent}
+        <div className="w-full overflow-x-auto">
+          <div className="w-full" style={{ minWidth: "300px" }}>
+            <div
+              className="grid grid-cols-4 gap-1 sm:gap-2 w-full p-1 sm:p-2"
+              style={{ gridTemplateRows: "auto auto auto auto" }}
+            >
+              {SOUTH_INDIAN_LAYOUT.map((layout, index) => (
+                <div key={index} className={layout.gridPos}>
+                  <ChartBox
+                    index={layout.rashiIndex}
+                    ascendantSignIndex={ascendantSignIndex}
+                    chartData={chartData}
+                    isTransit={isTransit}
+                    selectedPlanet={selectedPlanet}
+                    isAspected={
+                      selectedPlanet &&
+                      isHouseAspected(
+                        layout.rashiIndex,
+                        chartData?.planets[selectedPlanet]
+                      )
+                    }
+                  />
+                </div>
+              ))}
+
+              {/* Center box */}
+              <div className="row-start-2 col-start-2 row-span-2 col-span-2 border-gray-300 border-1 bg-gradient-to-br from-blue-50 to-indigo-100 flex flex-col justify-center items-center p-2 sm:p-6">
+                <h4 className="text-lg sm:text-2xl font-bold text-gray-800 mb-2 sm:mb-4 text-center">
+                  {isTransit ? "🌙 Transit" : "⭐ Birth Chart"}
+                </h4>
+                {centerContent}
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
-  );
-});
+    );
+  }
+);
 
 SouthIndianChart.displayName = "SouthIndianChart";
 
@@ -542,7 +593,9 @@ const SwissEphComponent = () => {
     latitude: 9.9252,
     longitude: 78.1198,
   });
-  const [selectedAyanamsha, setSelectedAyanamsha] = useState("SE_SIDM_KRISHNAMURTI");
+  const [selectedAyanamsha, setSelectedAyanamsha] = useState(
+    "SE_SIDM_KRISHNAMURTI"
+  );
 
   const isHouseAspected = useCallback(
     (houseIndex, planetDetails) => {
@@ -685,7 +738,7 @@ const SwissEphComponent = () => {
     () => calculateChart(false),
     [calculateChart]
   );
-  
+
   const calculateTransitChart = useCallback(
     () => calculateChart(true),
     [calculateChart]
@@ -723,40 +776,40 @@ const SwissEphComponent = () => {
       {/* Form Section */}
       <FormSection
         birthData={birthData}
-       onInputChange={handleInputChange}
-       selectedAyanamsha={selectedAyanamsha}
-       onAyanamshaChange={setSelectedAyanamsha}
-       onCalculateBirth={calculateBirthChart}
-       onCalculateTransit={calculateTransitChart}
-       loading={loading}
-       isInitialized={isInitialized}
-     />
+        onInputChange={handleInputChange}
+        selectedAyanamsha={selectedAyanamsha}
+        onAyanamshaChange={setSelectedAyanamsha}
+        onCalculateBirth={calculateBirthChart}
+        onCalculateTransit={calculateTransitChart}
+        loading={loading}
+        isInitialized={isInitialized}
+      />
 
-     {/* Charts Section */}
-     <div className="space-y-4 sm:space-y-8">
-       {birthChart && (
-         <SouthIndianChart
-           chartData={birthChart}
-           isTransit={false}
-           birthData={birthData}
-           selectedPlanet={selectedPlanet}
-           onPlanetSelect={handlePlanetSelect}
-           isHouseAspected={isHouseAspected}
-         />
-       )}
-       {transitChart && (
-         <SouthIndianChart
-           chartData={transitChart}
-           isTransit={true}
-           birthData={birthData}
-           selectedPlanet={selectedPlanet}
-           onPlanetSelect={handlePlanetSelect}
-           isHouseAspected={isHouseAspected}
-         />
-       )}
-     </div>
-   </div>
- );
+      {/* Charts Section */}
+      <div className="space-y-4 sm:space-y-8">
+        {birthChart && (
+          <SouthIndianChart
+            chartData={birthChart}
+            isTransit={false}
+            birthData={birthData}
+            selectedPlanet={selectedPlanet}
+            onPlanetSelect={handlePlanetSelect}
+            isHouseAspected={isHouseAspected}
+          />
+        )}
+        {transitChart && (
+          <SouthIndianChart
+            chartData={transitChart}
+            isTransit={true}
+            birthData={birthData}
+            selectedPlanet={selectedPlanet}
+            onPlanetSelect={handlePlanetSelect}
+            isHouseAspected={isHouseAspected}
+          />
+        )}
+      </div>
+    </div>
+  );
 };
 
 export default SwissEphComponent;
